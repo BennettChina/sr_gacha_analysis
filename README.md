@@ -1,5 +1,5 @@
-<div style="width:200px;height:200px;overflow:hidden;border-radius:50%;margin: 50px auto 20px;">
-    <img src="https://source.hibennett.cn/upic/CvANUM1685098381610.png" alt="avatar/logo" style="width:auto;height:auto;">
+<div align="center">
+    <img src="public/images/eyBKUn1685116674775.png" alt="avatar/logo" width="200" height="200">
 </div>
 <div align="center">
     <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/BennettChina/sr_gacha_analysis">
@@ -88,3 +88,6 @@ aliases:
     - 星铁抽卡分析
     - srga 
 ```
+
+
+
