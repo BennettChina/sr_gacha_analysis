@@ -1,0 +1,107 @@
+.main {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.main2 {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.header {
+	font-size: 20px;
+	margin-bottom: 50px;
+}
+
+.footer {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+}
+
+.item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	max-width: 450px;
+}
+
+.title {
+}
+
+.total {
+	font-size: 14px;
+	color: rgba(0, 0, 0, 0.85);
+	display: block;
+}
+
+.lj {
+	color: #3f85ff;
+}
+
+.wc {
+	color: green;
+}
+
+.info {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: flex-start;
+	height: 250px;
+	padding: 20px 50px 0;
+}
+
+.statistics {
+	display: inline-block;
+	width: 100px;
+}
+
+.five {
+	font-size: 14px;
+	color: rgb(192, 113, 61);
+	display: block;
+}
+
+.four {
+	font-size: 14px;
+	color: rgb(166, 95, 226);
+	display: block;
+}
+
+.third {
+	font-size: 14px;
+	color: rgb(77, 141, 247);
+	display: block;
+}
+
+.per {
+	color: green;
+}
+
+.jl {
+	font-size: 14px;
+	color: rgba(0, 0, 0, 0.85);
+	word-wrap: break-word;
+}
+
+.jl2 {
+	color: #fac858;
+	margin: 4px;
+}
+
+.time {
+	font-size: 14px;
+	color: rgba(0, 0, 0, 0.85);
+}
+
+.tips {
+	margin: 100px 0;
+}
