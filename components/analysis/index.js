@@ -41,7 +41,7 @@ export default defineComponent( {
 		const dataRecords = JSON.parse( data.data );
 		const state = reactive( {
 			uid: "",
-			records: {},
+			records: [],
 			showTips: dataRecords.length === 0,
 		} );
 		
@@ -68,7 +68,7 @@ export default defineComponent( {
 				color: "#73C0DE"
 			}
 		};
-		
+		const tmp = {};
 		for ( let element of dataRecords ) {
 			let total = element.data.length;
 			const record = {
@@ -149,8 +149,9 @@ export default defineComponent( {
 				} ]
 			}
 			
-			state.records[element.key] = record;
+			tmp[element.key] = record;
 		}
+		state.records = [ tmp['11'], tmp['12'], tmp['1'], tmp['2'] ].filter( t => !!t );
 		const getColor = function ( name ) {
 			let index = getRandomNum( 0, color_pool.length - 1 );
 			if ( nameColor[name] ) {
@@ -170,7 +171,6 @@ export default defineComponent( {
 			nameColor[name] = color;
 			return color;
 		}
-		console.log( state )
 		return {
 			...toRefs( state ),
 			getColor
