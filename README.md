@@ -19,7 +19,7 @@
 衍生插件，用于对 [崩坏星穹铁道](https://sr.mihoyo.com/)
 这款游戏中的抽卡数据进行分析制图，并存储用户的这部分数据，可随时将数据导入导出以及删除。
 
-- [x] 😜 使用链接分析生成饼图
+- [x] 😜 使用链接分析生成饼图（链接获取参考[链接获取教程](https://mp.weixin.qq.com/s/az7ljX2xiM8qEz3Xjx9rQw)）
 - [x] 🥳 历史记录分析
 - [x] 🎉 [SRGF标准](https://uigf.org/zh/standards/SRGF.html)导入功能
 - [x] ✨ [SRGF标准](https://uigf.org/zh/standards/SRGF.html)导出功能
