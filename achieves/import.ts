@@ -1,12 +1,16 @@
 import { InputParameter } from "@modules/command";
 import fetch from "node-fetch";
-import { Gacha_Info, Standard_Gacha } from "#sr_gacha_analysis/util/types";
-import { fakeIdFn } from "#sr_gacha_analysis/util/util";
+import { Gacha_Info, GachaUserInfo, Standard_Gacha } from "#sr_gacha_analysis/util/types";
+import { fakeIdFn, getRegion } from "#sr_gacha_analysis/util/util";
 import { isPrivateMessage } from "@modules/message";
 import { Group, GroupMessage, MessageElem, PrivateMessage, User } from "icqq";
-import { DB_KEY_GACHA_DATA } from "#sr_gacha_analysis/util/constants";
+import { DB_KEY_CURRENT_ID, DB_KEY_GACHA_DATA } from "#sr_gacha_analysis/util/constants";
 
-async function import_from_json( file_url, { redis, sendMessage }: InputParameter ): Promise<void> {
+async function import_from_json( file_url, {
+	redis,
+	sendMessage,
+	messageData: { sender: { user_id } }
+}: InputParameter ): Promise<void> {
 	const response: Response = await fetch( file_url );
 	const { info, list }: Standard_Gacha = await response.json();
 	if ( list ) {
@@ -22,11 +26,25 @@ async function import_from_json( file_url, { redis, sendMessage }: InputParamete
 			const db_key: string = DB_KEY_GACHA_DATA.replace( "$gacha_type", data.gacha_type ).replace( "$uid", info.uid );
 			await redis.setHash( db_key, { [gacha_id]: JSON.stringify( gacha_info ) } );
 		}
+		const db_key = DB_KEY_CURRENT_ID.replace( "$qq", user_id.toString() );
+		const uid: string = await redis.getHashField( db_key, "uid" );
+		if ( !uid ) {
+			const data: GachaUserInfo = {
+				uid: info.uid,
+				region_time_zone: info.region_time_zone,
+				region: getRegion( info.uid[0] )
+			};
+			await redis.setHash( db_key, data );
+		}
 		await sendMessage( `${ info.uid } 的 ${ list.length } 条抽卡记录数据已导入。` );
 	}
 }
 
-async function import_from_excel( file_url: string, { redis, sendMessage }: InputParameter ): Promise<void> {
+async function import_from_excel( file_url: string, {
+	redis,
+	sendMessage,
+	messageData: { sender: { user_id } }
+}: InputParameter ): Promise<void> {
 	const response: Response = await fetch( file_url );
 	const buffer: ArrayBuffer = await response.arrayBuffer();
 	const ExcelJS = require( 'exceljs' );
@@ -55,6 +73,17 @@ async function import_from_excel( file_url: string, { redis, sendMessage }: Inpu
 		const db_key: string = DB_KEY_GACHA_DATA.replace( "$gacha_type", gacha_type ).replace( "$uid", uid );
 		redis.setHash( db_key, { [id]: JSON.stringify( gacha_info ) } );
 	} );
+	
+	const db_key = DB_KEY_CURRENT_ID.replace( "$qq", user_id.toString() );
+	const uid: string = await redis.getHashField( db_key, "uid" );
+	if ( !uid ) {
+		const data: GachaUserInfo = {
+			uid: import_uid,
+			region_time_zone: 8,
+			region: getRegion( import_uid[0] )
+		};
+		await redis.setHash( db_key, data );
+	}
 	
 	await sendMessage( `${ import_uid } 的 ${ sheetValues.length } 条抽卡记录数据已导入。` );
 }

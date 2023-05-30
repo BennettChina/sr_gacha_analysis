@@ -64,16 +64,29 @@ export function generateDS(): string {
 	return `${ i },${ r },${ c }`;
 }
 
-function getRegion( first ) {
+export function getRegion( first ) {
 	switch ( first ) {
 		case "1":
-			return "prod_gf_cn";
 		case "2":
+			// 官服
 			return "prod_gf_cn";
 		case "5":
+			// 渠道服
 			return "prod_gf_qd";
+		case "6":
+			// 美服
+			return "prod_official_usa";
+		case "7":
+			// 欧服
+			return "prod_official_euro";
+		case "8":
+			// 亚服
+			return "prod_official_asia";
+		case "9":
+			// 港澳台服
+			return "prod_official_cht";
 		default:
-			return "unknown";
+			return "prod_gf_cn";
 	}
 }
 
