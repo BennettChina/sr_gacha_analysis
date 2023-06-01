@@ -13,7 +13,7 @@ export let gacha_config: SRGachaAnalysisConfig;
 const draw_analysis: OrderConfig = {
 	type: "order",
 	cmdKey: "sr.gacha.analysis",
-	desc: [ "星铁抽卡分析", "[抽卡链接]" ],
+	desc: [ "星铁抽卡分析", "(抽卡链接)" ],
 	headers: [ "星铁抽卡分析" ],
 	detail: "目前仅支持使用链接直接分析抽卡数据，可以将链接作为参数直接传入",
 	regexps: [ ".*" ],
