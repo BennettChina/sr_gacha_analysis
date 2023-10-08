@@ -98,7 +98,7 @@ export default class SRGachaAnalysisConfig {
 			}
 			this.aliases = config.aliases;
 			for ( let alias of this.aliases ) {
-				PluginAlias[alias] = "sr_draw_analysis";
+				PluginAlias[alias] = "sr_gacha_analysis";
 			}
 			
 			bot.logger.info( "[星铁抽卡分析] 开始检测插件需要的依赖是否已安装..." );
