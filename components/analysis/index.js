@@ -113,7 +113,7 @@ export default defineComponent( {
 				}
 			}
 			const total5 = record.total - record.pity;
-			record.average5 = total5 === 0 ? 0 : total5 / ( record.weapon5 + record.character5 ).toFixed( 2 );
+			record.average5 = total5 === 0 ? 0 : ( total5 / ( record.weapon5 + record.character5 ) ).toFixed( 2 );
 			record.percent3 = total === 0 ? "0%" : ( record.weapon3 / total * 100 ).toFixed( 2 ) + "%";
 			record.percent4 = total === 0 ? "0%" : ( ( record.weapon4 + record.character4 ) / total * 100 ).toFixed( 2 ) + "%";
 			record.percent5 = total === 0 ? "0%" : ( ( record.weapon5 + record.character5 ) / total * 100 ).toFixed( 2 ) + "%";
