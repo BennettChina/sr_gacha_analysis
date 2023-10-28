@@ -1,4 +1,3 @@
-import { randomString } from "#genshin/utils/random";
 import { Md5 } from "md5-typescript";
 import {
 	AuthKey,
@@ -8,28 +7,20 @@ import {
 	GachaUserInfo,
 	QiniuOssConfig,
 	Standard_Gacha_Data
-} from "#sr_gacha_analysis/util/types";
-import Database from "@modules/database";
+} from "#/sr_gacha_analysis/util/types";
+import Database from "@/modules/database";
 import { exec } from "child_process";
-import FileManagement from "@modules/file";
-import { generateAuthKey, getSToken } from "#sr_gacha_analysis/util/api";
+import FileManagement from "@/modules/file";
+import { generateAuthKey, getSToken } from "#/sr_gacha_analysis/util/api";
 import fetch from "node-fetch";
 import bot from "ROOT";
 import { createReadStream } from "fs";
-import { MessageRet, Sendable } from "icqq";
-import { PageFunction, RenderResult } from "@modules/renderer";
-import { renderer } from "#sr_gacha_analysis/init";
-import { Private } from "#genshin/module/private/main";
-import { getPrivateAccount } from "#genshin/utils/private";
-import { InputParameter } from "@modules/command";
-import {
-	DB_EXPIRE_24H,
-	DB_KEY_CURRENT_ID,
-	DB_KEY_GACHA_DATA,
-	DB_KEY_GACHA_HTML_URL,
-	DB_KEY_GACHA_URL
-} from "#sr_gacha_analysis/util/constants";
-import puppeteer, { Viewport } from "puppeteer";
+import { RenderResult } from "@/modules/renderer";
+import { renderer } from "#/sr_gacha_analysis/init";
+import { InputParameter } from "@/modules/command";
+import { DB_KEY_CURRENT_ID, DB_KEY_GACHA_DATA, DB_KEY_GACHA_URL } from "#/sr_gacha_analysis/util/constants";
+import { Viewport } from "puppeteer";
+import { getRandomString } from "@/utils/random";
 
 export async function sleep( ms: number ): Promise<void> {
 	return new Promise( resolve => setTimeout( resolve, ms ) );
@@ -58,7 +49,7 @@ export function generateDS(): string {
 	//fdv0fY9My9eA7MR0NpjGP9RjueFvjUSQ
 	const n: string = "dWCcD2FsOUXEstC5f9xubswZxEeoBOTc";
 	const i: number = Date.now() / 1000 | 0;
-	const r: string = randomString( 6 ).toLowerCase();
+	const r: string = getRandomString( 6 ).toLowerCase();
 	const c: string = Md5.init( `salt=${ n }&t=${ i }&r=${ r }` );
 	
 	return `${ i },${ r },${ c }`;
@@ -330,15 +321,7 @@ async function generatorUrl( cookie: string, game_uid: string, mysID: number, se
 }
 
 export async function getTimeOut( key: string ): Promise<number> {
-	return new Promise( ( resolve, reject ) => {
-		bot.redis.client.ttl( key, ( error: Error | null, data: number | null ) => {
-			if ( error !== null ) {
-				reject( error );
-			} else {
-				resolve( data || -2 );
-			}
-		} );
-	} );
+	return await bot.redis.client.ttl( key );
 }
 
 export function secondToString( ttl: number ): string {
@@ -348,16 +331,7 @@ export function secondToString( ttl: number ): string {
 	return `${ hour } 时 ${ minute } 分 ${ second } 秒`;
 }
 
-const pageFunction: PageFunction = async ( page: puppeteer.Page ) => {
-	if ( page.url().indexOf( "analysis.html" ) > -1 ) {
-		await sleep( 2000 );
-	}
-	const option: puppeteer.ScreenshotOptions = { type: "jpeg", quality: 100 };
-	const element = await page.$( '#app' );
-	return <Buffer>await element?.screenshot( option );
-}
-
-export async function analysisHandler( style: string, user_id: number, sendMessage: ( content: Sendable, allowAt?: boolean ) => Promise<MessageRet> ) {
+export async function analysisHandler( style: string, user_id: number, { sendMessage }: InputParameter ) {
 	const viewport: Viewport = {
 		width: 2000,
 		height: 1000,
@@ -379,37 +353,38 @@ export async function getUrl( sn: string, {
 	logger
 }: InputParameter ): Promise<string> {
 	const key: string = DB_KEY_GACHA_URL.replace( "$qq", user_id.toString() ).replace( "$sn", sn || "0" );
-	const html_key: string = DB_KEY_GACHA_HTML_URL.replace( "$qq", user_id.toString() ).replace( "$sn", sn || "0" );
+	// const html_key: string = DB_KEY_GACHA_HTML_URL.replace( "$qq", user_id.toString() ).replace( "$sn", sn || "0" );
 	const url: string = await redis.getString( key );
 	if ( url ) {
 		return url;
 	}
+	return "";
 	
-	let info: Private | string | undefined;
-	// 从私人服务获取Cookie
-	info = await getPrivateAccount( user_id, sn, auth );
-	if ( typeof info === "string" ) {
-		throw info;
-	}
-	
-	try {
-		logger.debug( `UID: {${ info.setting.uid }, Cookie: ${ info.setting.stoken }` );
-		const {
-			api_log_url,
-			log_html_url,
-			cookie
-		}: GachaUrl = await generatorUrl( info.setting.stoken, info.setting.uid, info.setting.mysID, info.setting.server );
-		// 更新Cookie
-		if ( cookie ) {
-			await info.replaceCookie( cookie );
-		}
-		// 校验成功放入缓存，不需要频繁生成URL
-		await redis.setString( key, api_log_url, DB_EXPIRE_24H );
-		await redis.setString( html_key, log_html_url, DB_EXPIRE_24H );
-		return api_log_url;
-	} catch ( error ) {
-		throw error;
-	}
+	// let info: Private | string | undefined;
+	// // 从私人服务获取Cookie
+	// info = await getPrivateAccount( user_id, sn, auth );
+	// if ( typeof info === "string" ) {
+	// 	throw info;
+	// }
+	//
+	// try {
+	// 	logger.debug( `UID: {${ info.setting.uid }, Cookie: ${ info.setting.stoken }` );
+	// 	const {
+	// 		api_log_url,
+	// 		log_html_url,
+	// 		cookie
+	// 	}: GachaUrl = await generatorUrl( info.setting.stoken, info.setting.uid, info.setting.mysID, info.setting.server );
+	// 	// 更新Cookie
+	// 	if ( cookie ) {
+	// 		await info.replaceCookie( cookie );
+	// 	}
+	// 	// 校验成功放入缓存，不需要频繁生成URL
+	// 	await redis.setString( key, api_log_url, DB_EXPIRE_24H );
+	// 	await redis.setString( html_key, log_html_url, DB_EXPIRE_24H );
+	// 	return api_log_url;
+	// } catch ( error ) {
+	// 	throw error;
+	// }
 	
 }
 
@@ -486,7 +461,7 @@ export async function loadData( url: string, user_id, sn, { redis, logger }: Inp
 	logger.debug( "CURRENT UID: ", info );
 	if ( info.uid ) {
 		const db_key = DB_KEY_CURRENT_ID.replace( "$qq", user_id );
-		await redis.setHash( db_key, info );
+		await redis.setHash( db_key, { ...info } );
 	}
 }
 

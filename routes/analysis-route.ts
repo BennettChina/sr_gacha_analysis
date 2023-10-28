@@ -1,8 +1,8 @@
 import express from "express";
 import bot from "ROOT";
-import { gacha_types_zh_cn, sortRecords } from "#sr_gacha_analysis/util/util";
-import { Gacha_Info } from "#sr_gacha_analysis/util/types";
-import { DB_KEY_CURRENT_ID, DB_KEY_GACHA_DATA } from "#sr_gacha_analysis/util/constants";
+import { gacha_types_zh_cn, sortRecords } from "#/sr_gacha_analysis/util/util";
+import { Gacha_Info } from "#/sr_gacha_analysis/util/types";
+import { DB_KEY_CURRENT_ID, DB_KEY_GACHA_DATA } from "#/sr_gacha_analysis/util/constants";
 
 const router = express.Router();
 

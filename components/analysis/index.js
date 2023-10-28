@@ -31,13 +31,17 @@ const template = `
 </div>`;
 
 const { defineComponent, reactive, toRefs } = Vue;
+import request from "../../public/js/http.js";
+import { urlParamsGet } from "../../public/js/url.js";
+import { getRandomNum } from "../../public/js/util.js";
+
 export default defineComponent( {
 	name: "AnalysisApp",
 	template,
 	components: { 'v-chart': window.VueECharts },
 	setup() {
-		const urlParams = parseURL( location.search );
-		const data = request( `/api/analysis/result?qq=${ urlParams.qq }` );
+		const urlParams = urlParamsGet( location.href );
+		const data = request( `/analysis/result?qq=${ urlParams.qq }` );
 		const dataRecords = JSON.parse( data.data );
 		const state = reactive( {
 			uid: "",

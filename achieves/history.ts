@@ -1,10 +1,9 @@
-import { InputParameter } from "@modules/command";
-import { analysisHandler } from "#sr_gacha_analysis/util/util";
-import { DB_KEY_CURRENT_ID } from "#sr_gacha_analysis/util/constants";
+import { defineDirective } from "@/modules/command";
+import { analysisHandler } from "#/sr_gacha_analysis/util/util";
+import { DB_KEY_CURRENT_ID } from "#/sr_gacha_analysis/util/constants";
 
-export async function main(
-	{ sendMessage, messageData, redis }: InputParameter
-): Promise<void> {
+export default defineDirective( "order", async ( i ) => {
+	const { sendMessage, messageData, redis } = i;
 	const { sender: { user_id }, raw_message } = messageData;
 	let uid = '';
 	try {
@@ -19,5 +18,5 @@ export async function main(
 		return;
 	}
 	
-	await analysisHandler( raw_message, user_id, sendMessage );
-}
+	await analysisHandler( raw_message, user_id, i );
+} )

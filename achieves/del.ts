@@ -1,12 +1,8 @@
-import { InputParameter } from "@modules/command";
-import { gacha_types_zh_cn } from "#sr_gacha_analysis/util/util";
-import { DB_KEY_CURRENT_ID, DB_KEY_GACHA_DATA } from "#sr_gacha_analysis/util/constants";
+import { defineDirective } from "@/modules/command";
+import { gacha_types_zh_cn } from "#/sr_gacha_analysis/util/util";
+import { DB_KEY_CURRENT_ID, DB_KEY_GACHA_DATA } from "#/sr_gacha_analysis/util/constants";
 
-export async function main( {
-	                            sendMessage,
-	                            messageData: { sender: { user_id } },
-	                            redis
-                            }: InputParameter ): Promise<void> {
+export default defineDirective( "order", async ( { sendMessage, messageData: { sender: { user_id } }, redis } ) => {
 	let uid: string = "";
 	const current_uid_db_key = DB_KEY_CURRENT_ID.replace( "$qq", user_id.toString() );
 	try {
@@ -29,4 +25,4 @@ export async function main( {
 	await redis.deleteKey( ...keys );
 	
 	await sendMessage( `已清除${ uid }的抽卡统计数据。` );
-}
+} )

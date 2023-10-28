@@ -1,10 +1,9 @@
 import axios, { AxiosError } from "axios";
-import { generateDS, getGameBiz } from "#sr_gacha_analysis/util/util";
-import { guid } from "#genshin/utils/guid";
-import { Cookies } from "#genshin/module";
-import { AuthKey, GachaPoolInfo, UIGF_Md5 } from "#sr_gacha_analysis/util/types";
+import { generateDS, getGameBiz } from "#/sr_gacha_analysis/util/util";
+import { AuthKey, GachaPoolInfo, UIGF_Md5 } from "#/sr_gacha_analysis/util/types";
 import bot from "ROOT";
-import { DB_KEY_GACHA_POOL_INFO } from "#sr_gacha_analysis/util/constants";
+import { DB_KEY_GACHA_POOL_INFO } from "#/sr_gacha_analysis/util/constants";
+import { guid } from "#/sr_gacha_analysis/util/guid";
 
 const API = {
 	AUTH_KEY: "https://api-takumi.mihoyo.com/binding/api/genAuthKey",
@@ -46,7 +45,7 @@ export async function generateAuthKey( uid: string, server: string, cookie: stri
 			timeout: 5000
 		} ).then( ( { data: { retcode, message, data } } ) => {
 			if ( retcode === 10001 ) {
-				reject( Cookies.checkExpired( cookie ) );
+				reject( "请更换Cookie" );
 				return;
 			}
 			if ( retcode !== 0 ) {
@@ -86,7 +85,7 @@ export async function getSToken( userId: number, loginTicket: string, cookie: st
 			timeout: 5000
 		} ).then( ( { data: { retcode, message, data } } ) => {
 			if ( retcode === 10001 ) {
-				reject( Cookies.checkExpired( cookie ) );
+				reject( "请更换Cookie" );
 				return;
 			}
 			if ( retcode !== 0 ) {

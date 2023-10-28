@@ -1,17 +1,15 @@
-import { InputParameter } from "@modules/command";
-import { analysisHandler, loadData } from "#sr_gacha_analysis/util/util";
+import { defineDirective } from "@/modules/command";
+import { analysisHandler, loadData } from "#/sr_gacha_analysis/util/util";
 import {
 	DB_EXPIRE_24H,
 	DB_KEY_GACHA_HTML_URL,
 	DB_KEY_GACHA_URL,
 	DB_KEY_GACHA_URL_DEFAULT,
 	GACHA_URL_REG
-} from "#sr_gacha_analysis/util/constants";
+} from "#/sr_gacha_analysis/util/constants";
 
 
-export async function main(
-	i: InputParameter
-): Promise<void> {
+export default defineDirective( "order", async ( i ) => {
 	const { sendMessage, messageData, redis, logger } = i;
 	const { sender: { user_id }, raw_message } = messageData;
 	const cn_api_domain: string = 'https://api-takumi.mihoyo.com';
@@ -77,5 +75,5 @@ export async function main(
 		return;
 	}
 	
-	await analysisHandler( style, user_id, sendMessage );
-}
+	await analysisHandler( style, user_id, i );
+} )

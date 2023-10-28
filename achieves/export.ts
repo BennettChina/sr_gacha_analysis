@@ -1,17 +1,16 @@
-import { InputParameter, Order } from "@modules/command";
+import { defineDirective, InputParameter, Order } from "@/modules/command";
 import {
 	Gacha_Info,
-	GachaUserInfo,
 	Standard_Gacha,
 	Standard_Gacha_Data,
 	Standard_Gacha_Excel,
 	Standard_Gacha_Excel_Origin_Data,
 	Standard_Gacha_Info
-} from "#sr_gacha_analysis/util/types";
+} from "#/sr_gacha_analysis/util/types";
 import moment from "moment";
 import fs from "fs";
 import { resolve } from "path";
-import { isGroupMessage } from "@modules/message";
+import { isGroupMessage } from "@/modules/message";
 import {
 	convert2Lang,
 	convert2Readable,
@@ -23,25 +22,24 @@ import {
 	sheet_names_zh_cn,
 	sortRecords,
 	upload2Qiniu
-} from "#sr_gacha_analysis/util/util";
+} from "#/sr_gacha_analysis/util/util";
 
-import { getRandomStr } from "@modules/utils";
-import { gacha_config } from "#sr_gacha_analysis/init";
+import { gacha_config } from "#/sr_gacha_analysis/init";
 import bot from "ROOT";
-import { ImageElem, MessageRet, segment, Sendable } from "icqq";
-import { Logger } from "log4js";
-import FileManagement from "@modules/file";
-import { DB_KEY_CURRENT_ID, DB_KEY_GACHA_DATA, DB_KEY_GACHA_HTML_URL } from "#sr_gacha_analysis/util/constants";
+import FileManagement from "@/modules/file";
+import { DB_KEY_CURRENT_ID, DB_KEY_GACHA_DATA, DB_KEY_GACHA_HTML_URL } from "#/sr_gacha_analysis/util/constants";
+import { getRandomString } from "@/utils/random";
+import { segment } from "@/modules/lib";
 
-async function sendExportResult( url: string, logger: Logger, sendMessage: ( content: Sendable, allowAt?: boolean ) => Promise<MessageRet> ) {
+async function sendExportResult( url: string, { logger, sendMessage }: InputParameter ) {
 	if ( gacha_config.qrcode ) {
 		const { toDataURL } = require( "qrcode" );
 		const options = {
 			errorCorrectionLevel: 'H',
 			margin: 1,
 			color: {
-				dark: '#000',
-				light: '#FFF',
+				dark: '#/000',
+				light: '#/FFF',
 			}
 		}
 		toDataURL( url, options, ( err: any, image: string ) => {
@@ -51,7 +49,7 @@ async function sendExportResult( url: string, logger: Logger, sendMessage: ( con
 				return;
 			}
 			image = image.replace( "data:image/png;base64,", "" );
-			const qr_code: ImageElem = segment.image( `base64://${ image }` );
+			const qr_code = segment.image( `base64://${ image }` );
 			sendMessage( qr_code );
 		} )
 	} else {
@@ -77,7 +75,7 @@ async function export2JSON( export_data: Standard_Gacha, i: InputParameter ) {
 			const url: string = await upload2Qiniu( export_json_path, file_name, gacha_config.qiniuOss, redis );
 			// 导出后删掉临时文件
 			fs.unlinkSync( export_json_path );
-			await sendExportResult( url, logger, sendMessage );
+			await sendExportResult( url, i );
 			return;
 		} catch ( error ) {
 			logger.error( "抽卡记录导出成功，上传 OSS 失败！", error );
@@ -151,9 +149,11 @@ async function uploadFile( file_path: string, file_name: string, {
 }: InputParameter ) {
 	if ( isGroupMessage( messageData ) ) {
 		try {
-			await client.pickGroup( messageData.group_id ).fs.upload( file_path, "/StarRail/gacha_export", file_name, percentage => {
-				logger.debug( "抽卡记录文件上传进度: ", percentage );
-			} );
+			await client.uploadGroupFile( messageData.group_id, {
+				file: file_path,
+				name: file_name,
+				folder: "/StarRail/gacha_export"
+			} )
 			await sendMessage( `抽卡记录文件已导出至${ file_name }` );
 		} catch ( e ) {
 			logger.warn( `抽卡记录导出文件 ${ file_name } 上传群文件失败`, e );
@@ -164,8 +164,9 @@ async function uploadFile( file_path: string, file_name: string, {
 		}
 	} else {
 		try {
-			await client.pickFriend( messageData.from_id ).sendFile( file_path, file_name, percentage => {
-				logger.debug( "抽卡记录文件上传进度: ", percentage );
+			await client.uploadPrivateFile( messageData.user_id, {
+				file: file_path,
+				name: file_name,
 			} );
 			await sendMessage( `抽卡记录文件已导出至${ file_name }` );
 		} catch ( e ) {
@@ -223,7 +224,7 @@ async function export2Excel( {
 		}
 		
 		// 设置保护模式，避免用户随意修改内容
-		await sheet.protect( getRandomStr( 20 ), {
+		await sheet.protect( getRandomString( 20 ), {
 			formatCells: true,
 			formatRows: true,
 			formatColumns: true,
@@ -266,7 +267,7 @@ async function export2Excel( {
 		await addRowAndSetStyle( sheet, data );
 	}
 	// 设置保护模式，避免用户随意修改内容
-	await sheet.protect( getRandomStr( 20 ), {
+	await sheet.protect( getRandomString( 20 ), {
 		formatCells: true,
 		formatRows: true,
 		formatColumns: true,
@@ -289,7 +290,7 @@ async function export2Excel( {
 			const url: string = await upload2Qiniu( export_excel_path, file_name, gacha_config.qiniuOss, redis );
 			// 导出后删掉临时文件
 			fs.unlinkSync( export_excel_path );
-			await sendExportResult( url, logger, sendMessage );
+			await sendExportResult( url, i );
 			return;
 		} catch ( error ) {
 			logger.error( "抽卡记录导出成功，上传 OSS 失败！", error );
@@ -330,7 +331,7 @@ function getVersion( file: FileManagement ): string {
 	return version.split( "-" )[0];
 }
 
-export async function main( bot: InputParameter ): Promise<void> {
+export default defineDirective( "order", async ( bot ) => {
 	const { sendMessage, messageData, redis } = bot;
 	const { sender: { user_id }, raw_message } = messageData;
 	const reg = new RegExp( /(?<type>json|excel|url)(\s)*(?<sn>\d+)?/ );
@@ -349,7 +350,7 @@ export async function main( bot: InputParameter ): Promise<void> {
 	const {
 		uid,
 		region_time_zone
-	}: GachaUserInfo = await redis.getHash( DB_KEY_CURRENT_ID.replace( "$qq", user_id.toString() ) );
+	} = await redis.getHash( DB_KEY_CURRENT_ID.replace( "$qq", user_id.toString() ) );
 	let lang: string = "zh-cn";
 	for ( let gacha_type in gacha_types_zh_cn ) {
 		const db_key: string = DB_KEY_GACHA_DATA.replace( "$gacha_type", gacha_type ).replace( "$uid", uid );
@@ -399,4 +400,4 @@ export async function main( bot: InputParameter ): Promise<void> {
 	} else {
 		await sendMessage( `不支持的导出类型: ${ raw_message }` );
 	}
-}
+} )
