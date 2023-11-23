@@ -33,7 +33,7 @@
 在 `Adachi-BOT/src/plugins` 目录执行下面的命令。
 
 ```shell
-git clone https://ghproxy.com/https://github.com/BennettChina/sr_gacha_analysis.git
+git clone https://mirror.ghproxy.com/https://github.com/BennettChina/sr_gacha_analysis.git
 ```
 
 ## 🎁 更新方式
