@@ -10,7 +10,6 @@ import {
 import moment from "moment";
 import fs from "fs";
 import { resolve } from "path";
-import { isGroupMessage } from "@/modules/message";
 import {
 	convert2Lang,
 	convert2Readable,
@@ -86,7 +85,7 @@ async function export2JSON( export_data: Standard_Gacha, i: InputParameter ) {
 			fs.unlinkSync( export_json_path );
 		}
 	}
-	await uploadFile( export_json_path, file_name, i );
+	// await uploadFile( export_json_path, file_name, i );
 }
 
 
@@ -141,6 +140,7 @@ function setHeaderStyle( headers: string[], sheet ) {
 	} );
 }
 
+/* 暂时不可用
 async function uploadFile( file_path: string, file_name: string, {
 	client,
 	messageData,
@@ -178,6 +178,7 @@ async function uploadFile( file_path: string, file_name: string, {
 		}
 	}
 }
+*/
 
 async function export2Excel( {
 	                             info: { uid, lang, export_timestamp },
@@ -302,7 +303,7 @@ async function export2Excel( {
 			return;
 		}
 	}
-	await uploadFile( export_excel_path, file_name, i );
+	// await uploadFile( export_excel_path, file_name, i );
 }
 
 async function export_gacha_url( user_id: number, sn: string, i: InputParameter ) {
@@ -342,6 +343,12 @@ export default defineDirective( "order", async ( bot ) => {
 	// 链接直接导出
 	if ( type === 'url' ) {
 		await export_gacha_url( user_id, sn, bot );
+		return;
+	}
+	
+	if ( !( gacha_config.qiniuOss.enable || gacha_config.qiniuOss.uses3 ) ) {
+		bot.logger.warn( "[星铁抽卡分析插件] 无法导出，未开启OSS功能，无法发送文件给用户！" );
+		await sendMessage( "无法导出，暂不支持直接发送文件，需要联系 BOT 持有人开启 OSS 功能" );
 		return;
 	}
 	
