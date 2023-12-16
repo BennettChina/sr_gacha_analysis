@@ -484,8 +484,9 @@ export function sortRecords( prev: Gacha_Info | Standard_Gacha_Data, curr: Gacha
 }
 
 export function htmlDecode( str: string ): string {
-	return str.replace( /&#(\d+);/gi, function ( match, numStr ) {
+	str = str.replace( /&#(\d+);/gi, function ( match, numStr ) {
 		const num = parseInt( numStr, 10 );
 		return String.fromCharCode( num );
 	} );
+	return str.replace( /&amp;/gi, "&" );
 }
