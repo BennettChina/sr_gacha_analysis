@@ -1,5 +1,5 @@
 import { defineDirective } from "@/modules/command";
-import { analysisHandler, loadData } from "#/sr_gacha_analysis/util/util";
+import { analysisHandler, htmlDecode, loadData } from "#/sr_gacha_analysis/util/util";
 import {
 	DB_EXPIRE_24H,
 	DB_KEY_GACHA_HTML_URL,
@@ -29,7 +29,7 @@ export default defineDirective( "order", async ( i ) => {
 	} else if ( GACHA_URL_REG.test( raw_message ) ) {
 		// 链接方式
 		try {
-			const { searchParams, host } = new URL( raw_message );
+			const { searchParams, host } = new URL( htmlDecode( raw_message ) );
 			if ( host.includes( 'webstatic-sea' ) || host.includes( 'hkrpg-api-os' ) || host.includes( "api-os-takumi" ) ) {
 				url = os_api_domain + url;
 			} else {

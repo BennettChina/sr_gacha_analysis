@@ -482,3 +482,10 @@ export function sortRecords( prev: Gacha_Info | Standard_Gacha_Data, curr: Gacha
 		return -1;
 	}
 }
+
+export function htmlDecode( str: string ): string {
+	return str.replace( /&#(\d+);/gi, function ( match, numStr ) {
+		const num = parseInt( numStr, 10 );
+		return String.fromCharCode( num );
+	} );
+}
