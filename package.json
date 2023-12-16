@@ -3,7 +3,7 @@
   "author" : "Bennett",
   "private" : true,
   "license" : "MIT",
-  "version" : "2.0.2",
+  "version" : "2.0.3",
   "description" : "这是一个基于 SilveryStar/Adachi-BOT 应用于 QQ 的崩坏星穹铁道的抽卡分析插件。",
   "dependencies" : {
     "exceljs" : "^4.4.0",
