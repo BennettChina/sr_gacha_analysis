@@ -12,8 +12,8 @@ import {
 export default defineDirective( "order", async ( i ) => {
 	const { sendMessage, messageData, redis, logger } = i;
 	const { sender: { user_id }, raw_message } = messageData;
-	const cn_api_domain: string = 'https://api-takumi.mihoyo.com';
-	const os_api_domain: string = 'https://api-os-takumi.mihoyo.com';
+	const cn_api_domain: string = 'https://public-operation-hkrpg.mihoyo.com';
+	const os_api_domain: string = 'https://public-operation-hkrpg-sg.hoyoverse.mihoyo.com';
 	let url: string = '/common/gacha_record/api/getGachaLog?';
 	
 	// style、sn暂时未用到

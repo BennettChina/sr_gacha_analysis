@@ -8,7 +8,7 @@ import { guid } from "#/sr_gacha_analysis/util/guid";
 const API = {
 	AUTH_KEY: "https://api-takumi.mihoyo.com/binding/api/genAuthKey",
 	TOKEN: "https://api-takumi.mihoyo.com/auth/api/getMultiTokenByLoginTicket",
-	POOL: "https://webstatic.mihoyo.com/hk4e/gacha_info/cn_gf01/gacha/list.json",
+	POOL: "https://operation-webstatic.mihoyo.com/gacha_info/hkrpg/prod_gf_cn/gacha/list.json",
 	UIGF_MD5: "https://api.uigf.org/md5/starrail",
 	UIGF_DICT: "https://api.uigf.org/dict/starrail/{lang}.json"
 }

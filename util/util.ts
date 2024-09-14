@@ -445,12 +445,13 @@ export async function loadData( url: string, user_id, sn, { redis, logger }: Inp
 					gacha_id = element.id;
 					info.uid = element.uid;
 					const db_key: string = DB_KEY_GACHA_DATA.replace( "$gacha_type", gacha_type ).replace( "$uid", info.uid );
-					let hasKey = await redis.existHashKey( db_key, gacha_id );
-					if ( hasKey ) {
-						page++;
-						await sleep( 200 );
-						break label_type;
-					}
+					// todo 暂时去掉，把被2024/08 ～ 2024/09这个时间段造成的污染数据覆盖回来，6个月后无法再覆盖数据时再加回来
+					// let hasKey = await redis.existHashKey( db_key, gacha_id );
+					// if ( hasKey ) {
+					// 	page++;
+					// 	await sleep( 200 );
+					// 	break label_type;
+					// }
 					await redis.setHash( db_key, { [gacha_id]: JSON.stringify( element ) } );
 				}
 				page++;
