@@ -13,6 +13,10 @@
 
 <h1 align="center">星铁抽卡分析插件</h1>
 
+> [!CAUTION]
+> 本项目已停止维护，功能已合并至 [mihoyo-gacha](https://github.com/BennettChina/mihoyo-gacha) 插件中，可直接使用
+`#分析抽卡 星铁` 指令来分析星铁抽卡记录。
+
 ## 🧑‍💻简介
 
 **星铁抽卡分析插件** 为 [Adachi-BOT](https://github.com/SilveryStar/Adachi-BOT)
